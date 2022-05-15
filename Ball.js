@@ -38,29 +38,26 @@ export default class Ball {
         this.velocity = INITIAL_VELOCITY
     }
 
-    update(delta) {
+    update(delta, paddleRects) {
         this.x += this.direction.x * this.velocity * delta
         this.y += this.direction.y * this.velocity * delta
-
-        if (this.x <= 0)
-            this.x = 0.1
-        if (this.y <= 0)
-            this.y = 0.1 //protects from ball glitching outside screen
-
 
         const rect = this.rect()
         this.velocity += INCREASE_VELOCITY * delta // comment to remove ball speeding up feature
         if (rect.bottom >= window.innerHeight || rect.top <= 0)
             this.direction.y *= -1
-        if (rect.right >= window.innerWidth || rect.left <= 0)
+        if (paddleRects.some(r => isCollision(r, rect)))
             this.direction.x *= -1
- 
-
-
     }
+}
 
-    
-
+function isCollision(rect1, rect2) {
+    return (
+        rect1.left <= rect2.right &&
+        rect1.right >= rect2.left &&
+        rect1.top <= rect2.bottom &&
+        rect1.bottom >= rect2.top
+    )
 }
 
 function randomNumberBetween(min, max) {
